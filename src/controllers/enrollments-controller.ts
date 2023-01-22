@@ -2,6 +2,7 @@ import { AuthenticatedRequest } from '@/middlewares';
 import enrollmentsService from '@/services/enrollments-service';
 import { response, Response } from 'express';
 import httpStatus from 'http-status';
+import { ViaCEPAddress } from '@/protocols';
 
 export async function getEnrollmentByUser(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
@@ -33,9 +34,9 @@ export async function getAddressFromCEP(req: AuthenticatedRequest, res: Response
   try {
     const { logradouro, complemento, bairro, localidade, uf, erro } = await enrollmentsService.getAddressFromCEP(cep);
 
-    const address = { logradouro, complemento, bairro, cidade: localidade, uf };
+    const address: ViaCEPAddress = { logradouro, complemento, bairro, cidade: localidade, uf };
     if (erro) {
-      return res.sendStatus(204);
+      return res.sendStatus(httpStatus.NO_CONTENT);
     }
     res.status(httpStatus.OK).send(address);
   } catch (error) {
